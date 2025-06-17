@@ -75,7 +75,8 @@ def load_model():
 
 model = load_model()
 
-# 🌐 语言切换\lang = st.radio("🌐 Language / 语言", ["English", "中文"], horizontal=True)
+# 🌐 语言切换
+lang = st.radio("🌐 Language / 语言", ["English", "中文"], horizontal=True)
 
 # 文本包
 text = {
