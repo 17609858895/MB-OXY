@@ -93,7 +93,8 @@ text = {
         ],
         "button_predict": "🔍 Predict Degradation",
         "button_export": "📁 Export CSV",
-        "result_prefix": "✅ Predicted MB degradation:",
+        "result_prefix": "✅ Predicted MB degradation",
+        "result_unit": "%",
         "file_name": "prediction_result.csv"
     },
     "中文": {
@@ -109,7 +110,8 @@ text = {
         ],
         "button_predict": "🔍 预测降解率",
         "button_export": "📁 导出 CSV",
-        "result_prefix": "✅ 预测的亚甲蓝降解率：",
+        "result_prefix": "✅ 预测的亚甲蓝降解率",
+        "result_unit": "%",
         "file_name": "预测结果.csv"
     }
 }[lang]
@@ -133,8 +135,10 @@ df_result = None
 if st.button(text["button_predict"]):
     input_data = np.array([[temp_k, mb_conc, oxidant_conc, catalyst_dos, react_time, pH_val]])
     prediction = model.predict(input_data)[0]
-    st.success(f"{text['result_prefix']} **{prediction:.2f}**")
+    # 显示带百分号的结果
+    st.success(f"{text['result_prefix']}: **{prediction:.2f}{text['result_unit']}**")
 
+    # 结果表格带单位列标题
     df_result = pd.DataFrame([{  
         text["input_labels"][0]: temp_k,
         text["input_labels"][1]: mb_conc,
@@ -142,7 +146,7 @@ if st.button(text["button_predict"]):
         text["input_labels"][3]: catalyst_dos,
         text["input_labels"][4]: react_time,
         text["input_labels"][5]: pH_val,
-        text['result_prefix'].strip('✅ '): round(prediction, 2)
+        f"{text['result_prefix']} (%)": round(prediction, 2)
     }])
 
 # 导出 CSV
