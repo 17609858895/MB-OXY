@@ -16,7 +16,7 @@ st.markdown("""
     .stApp {
         max-width: 700px;
         margin: auto;
-        background-color: #e0f7fa;  /* 浅蓝色背景 */
+        background-color: #e0f7fa;
         padding: 2rem;
     }
     html, body, [class*="css"] {
@@ -78,7 +78,7 @@ model = load_model()
 # 🌐 语言切换
 lang = st.radio("🌐 Language / 语言", ["English", "中文"], horizontal=True)
 
-# 文本包
+# 文本包（去掉催化剂用量那项）
 text = {
     "English": {
         "title": "🔬 ML prediction of MB degradation via advanced oxidation",
@@ -87,7 +87,6 @@ text = {
             "🌡 Reaction temperature (K)",
             "💧 MB concentration (mg/L)",
             "⚗️ Oxidant concentration (mmol/L)",
-            "🧪 Catalyst dosage (g/L)",
             "⏱ Reaction time (min)",
             "🌡 pH value"
         ],
@@ -104,7 +103,6 @@ text = {
             "🌡 反应温度 (K)",
             "💧 亚甲蓝浓度 (mg/L)",
             "⚗️ 氧化剂浓度 (mmol/L)",
-            "🧪 催化剂用量 (g/L)",
             "⏱ 反应时间 (min)",
             "🌡 溶液 pH"
         ],
@@ -120,32 +118,28 @@ text = {
 st.markdown(f'<div class="custom-title">{text["title"]}</div>', unsafe_allow_html=True)
 st.markdown(text["description"])
 
-# 输入字段
+# 输入字段（删除催化剂输入）
 temp_k       = st.number_input(text["input_labels"][0], min_value=0.0, value=298.0, step=1.0)
 mb_conc      = st.number_input(text["input_labels"][1], min_value=0.0, value=50.0, step=1.0)
 oxidant_conc = st.number_input(text["input_labels"][2], min_value=0.0, value=10.0, step=0.1)
-catalyst_dos = st.number_input(text["input_labels"][3], min_value=0.0, value=0.5, step=0.1)
-react_time   = st.number_input(text["input_labels"][4], min_value=0.0, value=60.0, step=1.0)
-pH_val       = st.number_input(text["input_labels"][5], min_value=1.0, max_value=14.0, value=7.0, step=0.1)
+react_time   = st.number_input(text["input_labels"][3], min_value=0.0, value=60.0, step=1.0)
+pH_val       = st.number_input(text["input_labels"][4], min_value=1.0, max_value=14.0, value=7.0, step=0.1)
 
 # 预测结果
 prediction = None
 df_result = None
 
 if st.button(text["button_predict"]):
-    input_data = np.array([[temp_k, mb_conc, oxidant_conc, catalyst_dos, react_time, pH_val]])
+    input_data = np.array([[temp_k, mb_conc, oxidant_conc, react_time, pH_val]])
     prediction = model.predict(input_data)[0]
-    # 显示带百分号的结果
     st.success(f"{text['result_prefix']}: **{prediction:.2f}{text['result_unit']}**")
 
-    # 结果表格带单位列标题
-    df_result = pd.DataFrame([{  
+    df_result = pd.DataFrame([{
         text["input_labels"][0]: temp_k,
         text["input_labels"][1]: mb_conc,
         text["input_labels"][2]: oxidant_conc,
-        text["input_labels"][3]: catalyst_dos,
-        text["input_labels"][4]: react_time,
-        text["input_labels"][5]: pH_val,
+        text["input_labels"][3]: react_time,
+        text["input_labels"][4]: pH_val,
         f"{text['result_prefix']} (%)": round(prediction, 2)
     }])
 
